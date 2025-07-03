@@ -76,28 +76,41 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+
     function editItem(item) {
-        const updatedTitle = prompt("Edit item:", item.title);
-        if (updatedTitle !== null) {
-            fetch(apiUrl + "/" + item.id, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    title: updatedTitle
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                item.title = data.title;
-                displayData(items);
-            })
-            .catch(error => {
-                handleErrorMessage(error);
-            });
-        }
+    if (item.id > 1000) {
+        alert("Mock API only supports editing items with ID ≤ 100.");
+        return;
     }
+
+    const updatedTitle = prompt("Edit item:", item.title);
+    if (updatedTitle !== null) {
+        fetch(apiUrl + "/" + item.id, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title: updatedTitle
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Edit failed: Server returned ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            item.title = data.title;
+            displayData(items);
+        })
+        .catch(error => {
+            handleErrorMessage(error);
+        });
+    }
+}
+
+
 
     function deleteItem(item) {
         fetch(apiUrl + "/" + item.id, {
